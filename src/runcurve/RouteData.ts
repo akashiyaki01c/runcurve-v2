@@ -17,6 +17,7 @@ export function GetCurveRadius(route: Route, vehicle: Vehicle, start: number, en
 			result[i] = curve.radius;
 		}
 	}
+
 	return result;
 }
 
@@ -33,6 +34,7 @@ export function GetGradient(route: Route, vehicle: Vehicle, start: number, end: 
 			result[i] = gradient.value;
 		}
 	}
+
 	return result;
 }
 

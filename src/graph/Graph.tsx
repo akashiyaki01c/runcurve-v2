@@ -16,7 +16,7 @@ export function Graph({
   const length =
     data[data.length - 1]?.runcurveArray[
       data[data.length - 1]?.runcurveArray.length - 1
-    ]?.distance || 0;
+    ]?.distance - data[0]?.runcurveArray[0]?.distance || 0;
 
   return (
     <>
@@ -119,7 +119,7 @@ export function Graph({
             stroke="red"
             fill="none"
             points={splitTime(v, route)
-              .runcurveArray.filter((_, i) => i % 5 === 0)
+              .runcurveArray.filter((_, i) => i % 10 === 0)
               .map((v) => {
                 return { ...v, time: v.time % 120 };
               })
@@ -139,7 +139,7 @@ export function Graph({
             stroke="blue"
             fill="none"
             points={v.runcurveArray
-              .filter((_, i) => i % 5 === 0)
+              .filter((_, i) => i % 10 === 0)
               .map(
                 (v) =>
                   `${(v.distance - start) * xScale},${

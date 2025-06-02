@@ -60,6 +60,7 @@ export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: numbe
 	const curveArray = GetCurveRadius(route, vehicle, startPos, endPos);
 	const gradientArray = GetGradient(route, vehicle, startPos, endPos);
 	const tunnelArray = GetTunnel(route, vehicle, startPos, endPos);
+	console.log(curveArray);
 
 	// ブレーキパターン配列
 	const brakePatternArray = getLimitSpeedBrakePatternArray(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray);

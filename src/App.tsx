@@ -320,7 +320,7 @@ function App() {
               GetRuncurveLine(
                 route,
                 vehicle,
-                75
+                100
               )
             )
           }

@@ -71,6 +71,21 @@ export class StopPosition {
 export const TestRoute: Route = {
 	name: "西神線",
 	gradients: [
+		{ position: -10264, value: 0.0 },
+		{ position: -8964, value: -34.0 },
+		{ position: -8173, value: 0.0 },
+		{ position: -7852, value: 30.0 },
+		{ position: -6952, value: 0.0 },
+		{ position: -6402, value: -20.0 },
+		{ position: -6131, value: -30.0 },
+		{ position: -5155, value: 0.0 },
+		{ position: -4673, value: 27.0 },
+		{ position: -3496, value: 0.0 },
+		{ position: -3140, value: 27.0 },
+		{ position: -2497, value: -2.0 },
+		{ position: -1895, value: 0.0 },
+		{ position: -1230, value: -20.0 },
+		{ position: -990, value: 0.0 },
 		{ position: 455, value: -24.0 },
 		{ position: 1455, value: 0.0 },
 		{ position: 1791, value: -29.939 },
@@ -165,6 +180,10 @@ export const TestRoute: Route = {
 		/* { name: "トンネル部", start: 0, end: 5000, type: "double" }, */
 	],
 	limitSpeeds: [
+
+		{ start: 151, end: 20972, speed: 75},
+
+
 		{ start: 22, end: 605, speed: 45 },
 		{ start: 4129, end: 5861, speed: 60 },
 
@@ -181,7 +200,10 @@ export const TestRoute: Route = {
 		{ start: 13380 + 7430, end: 13380 + 7580, speed: 25 },
 		{ start: 13380 + 7580, end: 13380 + 7700, speed: 15 },
 
-
+		{ start: -6647 - 100, end: -6647 + 20, speed: 45},
+		{ start: -4984 - 100, end: -4984 + 20, speed: 45},
+		{ start: -3313 - 100, end: -3313 + 20, speed: 45},
+		{ start: -1645 - 100, end: -1645 + 20, speed: 45},
 		{ start: 1716 - 100, end: 1716 + 20, speed: 45},
 		{ start: 4627 - 100, end: 4627 + 20, speed: 45},
 		{ start: 7365 - 100, end: 7365 + 20, speed: 45},
@@ -191,6 +213,11 @@ export const TestRoute: Route = {
 		{ start: 12100 - 100, end: 12100 + 20, speed: 45},
 	],
 	stopPositions: [
+		{ position: -9194, stationName: "西神中央", trackName: "2番線", isPass: false },
+		{ position: -6647, stationName: "西神南", trackName: "1番線", isPass: true },
+		{ position: -4984, stationName: "伊川谷", trackName: "1番線", isPass: true },
+		{ position: -3313, stationName: "学園都市", trackName: "1番線", isPass: true },
+		{ position: -1645, stationName: "総合運動公園", trackName: "1番線", isPass: true },
 		{ position: 151, stationName: "名谷", trackName: "1番線", isPass: false },
 		{ position: 1716, stationName: "妙法寺", trackName: "1番線", isPass: true },
 		{ position: 4627, stationName: "板宿", trackName: "1番線", isPass: true },
