@@ -328,7 +328,7 @@ function App() {
           計算実行
         </button>
       </div>
-      <div>
+      <div className=" overflow-scroll border-1 border-black">
         <Graph data={runcurve} route={route} />
       </div>
     </>

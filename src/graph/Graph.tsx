@@ -24,9 +24,6 @@ export function Graph({
         viewBox={`0 0 ${length * xScale} ${maxSpeed * yScale + 200}`}
         width={length * xScale}
         height={maxSpeed * yScale + 200}
-        style={{
-          border: "1px solid black",
-        }}
       >
         {/* 縦軸 */}
         {[...Array(length + 1).keys()].map((v) =>
@@ -60,6 +57,15 @@ export function Graph({
               textAnchor="middle"
             >
               {(v + start) / 1000}
+            </text>
+          ) : (v + start) % 100 === 0 ? (
+            <text
+              x={v * xScale}
+              y={maxSpeed * yScale + 25}
+              fontSize={17.5}
+              textAnchor="middle"
+            >
+              {(v + start) / 100 % 10}
             </text>
           ) : (
             <></>
@@ -112,8 +118,8 @@ export function Graph({
           <polyline
             stroke="red"
             fill="none"
-            points={v.runcurveArray
-              .filter((_, i) => i % 5 === 0)
+            points={splitTime(v, route)
+              .runcurveArray.filter((_, i) => i % 5 === 0)
               .map((v) => {
                 return { ...v, time: v.time % 120 };
               })
@@ -132,8 +138,8 @@ export function Graph({
           <polyline
             stroke="blue"
             fill="none"
-            points={splitTime(v, route)
-              .runcurveArray.filter((_, i) => i % 5 === 0)
+            points={v.runcurveArray
+              .filter((_, i) => i % 5 === 0)
               .map(
                 (v) =>
                   `${(v.distance - start) * xScale},${
