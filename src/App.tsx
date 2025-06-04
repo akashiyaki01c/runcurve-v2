@@ -5,7 +5,8 @@ import { TestRoute } from "./model/Route";
 import { TestVehicle } from "./model/Vehicle";
 import { RuncurveResult } from "./model/Runcurve";
 import { Graph } from "./graph/Graph";
-import { GetRuncurveLine } from "./runcurve/RuncurveLine";
+import { GetRuncurveLine, GetRuncurveLineTime } from "./runcurve/RuncurveLine";
+import { Timetable } from "./graph/Timetable";
 
 function App() {
   const [route, setRoute] = useState(TestRoute);
@@ -186,6 +187,19 @@ function App() {
               </tbody>
             </table>
           </div>
+          <div>
+            <label>
+              JSON入出力
+              <textarea
+                value={JSON.stringify(route)}
+                onChange={(v) => {
+                  const value = JSON.parse(v.target.value) || {};
+                  setRoute({ ...route, ...value });
+                }}
+                className="border-slate-900 border-1 rounded-xs m-1"
+              />
+            </label>
+          </div>
         </div>
         <div className="h-100% border-r-1 border-slate-900"></div>
         <div className="flex-1/2">
@@ -315,21 +329,18 @@ function App() {
       <hr />
       <div>
         <button
-          onClick={(_) =>
-            setRuncurve(
-              GetRuncurveLine(
-                route,
-                vehicle,
-                100
-              )
-            )
-          }
+          onClick={(_) => setRuncurve(GetRuncurveLine(route, vehicle, 100))}
         >
           計算実行
         </button>
       </div>
-      <div className=" overflow-scroll border-1 border-black">
-        <Graph data={runcurve} route={route} />
+      <div>
+        <div className="overflow-scroll border-1 border-black p-2">
+          <Graph data={runcurve} route={route} />
+        </div>
+        <div className="p-2 flex justify-center">
+          <Timetable result={GetRuncurveLineTime(route, vehicle, runcurve)} />
+        </div>
       </div>
     </>
   );

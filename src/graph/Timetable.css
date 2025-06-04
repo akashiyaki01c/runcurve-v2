@@ -1,0 +1,8 @@
+.timetable td, .timetable th {
+	height: 16px;
+	border: 1px solid black;
+	padding: 0.2ric 0.25ric;
+}
+.timetable {
+	border-collapse: collapse;
+}

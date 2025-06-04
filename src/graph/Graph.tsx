@@ -29,6 +29,7 @@ export function Graph({
         {[...Array(length + 1).keys()].map((v) =>
           (v + start) % 200 === 0 ? (
             <line
+              key={`x-line-${v}`}
               stroke="#abf"
               x1={v * xScale}
               x2={v * xScale}
@@ -37,6 +38,7 @@ export function Graph({
             />
           ) : (v + start) % 20 === 0 ? (
             <line
+              key={`x-line-${v}`}
               stroke="#abf"
               x1={v * xScale}
               x2={v * xScale}
@@ -51,21 +53,23 @@ export function Graph({
         {[...Array(length + 1).keys()].map((v) =>
           (v + start) % 1000 === 0 ? (
             <text
+              key={`x-text-${v}`}
               x={v * xScale}
               y={maxSpeed * yScale + 30}
               fontSize={30}
               textAnchor="middle"
             >
-              {(v + start) / 1000}
+              {Math.abs((v + start) / 1000)}
             </text>
           ) : (v + start) % 100 === 0 ? (
             <text
+              key={`x-text-${v}`}
               x={v * xScale}
               y={maxSpeed * yScale + 25}
               fontSize={17.5}
               textAnchor="middle"
             >
-              {(v + start) / 100 % 10}
+              {Math.abs(((v + start) / 100) % 10)}
             </text>
           ) : (
             <></>
@@ -75,6 +79,7 @@ export function Graph({
         {[...Array(maxSpeed + 1).keys()].map((v) =>
           v % 10 === 0 ? (
             <line
+              key={`y-line-${v}`}
               stroke="#abf"
               x1={0}
               x2={length * xScale}
@@ -83,6 +88,7 @@ export function Graph({
             />
           ) : (
             <line
+              key={`y-line-${v}`}
               stroke="#abf"
               x1={0}
               x2={length * xScale}
@@ -96,6 +102,7 @@ export function Graph({
         {route.stopPositions.map((v) => (
           <>
             <line
+              key={`y-sta-line-${v}`}
               stroke="black"
               fill="none"
               x1={(v.position - start) * xScale}
@@ -105,6 +112,7 @@ export function Graph({
               strokeWidth={2}
             />
             <text
+              key={`y-sta-text-${v}`}
               x={(v.position - start) * xScale + 10}
               y={0}
               writingMode={"tb"}
@@ -116,10 +124,11 @@ export function Graph({
         {/* 時間線 */}
         {data.map((v) => (
           <polyline
+            key={`graph-polyline-time-${v.runcurveArray[0]?.distance}`}
             stroke="red"
             fill="none"
             points={splitTime(v, route)
-              .runcurveArray.filter((_, i) => i % 10 === 0)
+              .runcurveArray.filter((_, i) => i % 1 === 0)
               .map((v) => {
                 return { ...v, time: v.time % 120 };
               })
@@ -136,10 +145,11 @@ export function Graph({
         {/* 速度線 */}
         {data.map((v) => (
           <polyline
+            key={`graph-polyline-speed-${v.runcurveArray[0]?.distance}`}
             stroke="blue"
             fill="none"
             points={v.runcurveArray
-              .filter((_, i) => i % 10 === 0)
+              .filter((_, i) => i % 1 === 0)
               .map(
                 (v) =>
                   `${(v.distance - start) * xScale},${
@@ -155,6 +165,7 @@ export function Graph({
           .flatMap((v) => v.notches)
           .map((v) => (
             <text
+              key={`notch-${v[0]}-${v[1]}`}
               x={(v[0] - start) * xScale}
               y={(maxSpeed - 5) * yScale}
               textAnchor="middle"
@@ -165,6 +176,7 @@ export function Graph({
         {/* 制限速度 */}
         {route.limitSpeeds.map((v) => (
           <polyline
+            key={`limitspeed-${v.start}-${v.end}-${v.speed}`}
             stroke="black"
             fill="none"
             points={`${(v.start - start) * xScale},${
@@ -180,6 +192,7 @@ export function Graph({
         {route.curves.map((v) => (
           <>
             <polyline
+              key={`curve-line-${v.start}-${v.end}-${v.speed}`}
               stroke="black"
               fill="none"
               points={`${(v.start - start) * xScale},${
@@ -193,6 +206,7 @@ export function Graph({
               } ${(v.end - start) * xScale},${(maxSpeed + 15) * yScale}`}
             />
             <text
+              key={`curve-text-${v.start}-${v.end}-${v.speed}`}
               x={((v.start - start + (v.end - start)) / 2) * xScale}
               y={
                 (maxSpeed + 16.5 + 5 * (v.direction === "right" ? 1 : -1)) *
@@ -207,6 +221,7 @@ export function Graph({
         {pairwiseSplit([new Curve(), ...route.curves]).map((v) => (
           <>
             <polyline
+              key={`curve-between-${v[0].end}-${v[1]}`}
               stroke="black"
               fill="none"
               points={`${(v[0].end - start) * xScale},${
@@ -219,6 +234,7 @@ export function Graph({
         {route.gradients.map((v) => (
           <>
             <line
+              key={`gradient-line-${v.position}`}
               stroke="black"
               fill="none"
               x1={(v.position - start) * xScale}
@@ -228,6 +244,7 @@ export function Graph({
             ></line>
             {v.value > 0 ? (
               <text
+                key={`gradient-text-${v.position}`}
                 x={(v.position - start) * xScale}
                 y={(maxSpeed + 29) * yScale}
                 textAnchor="start"
@@ -239,6 +256,7 @@ export function Graph({
             )}
             {v.value < 0 ? (
               <text
+                key={`gradient-text-${v.position}`}
                 x={(v.position - start) * xScale}
                 y={(maxSpeed + 34) * yScale}
                 textAnchor="start"
@@ -250,6 +268,7 @@ export function Graph({
             )}
             {v.value === 0 ? (
               <text
+                key={`gradient-text-${v.position}`}
                 x={(v.position - start) * xScale}
                 y={(maxSpeed + 31.5) * yScale}
                 textAnchor="start"
