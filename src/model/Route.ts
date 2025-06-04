@@ -176,13 +176,16 @@ export const TestRoute: Route = {
 	tunnels: [
 		{ name: "落合隧道", start: 300, end: 1573, type: "double" },
 		{ name: "トンネル部", start: 1841, end: 5771, type: "double" },
-
-		/* { name: "トンネル部", start: 0, end: 5000, type: "double" }, */
 	],
 	limitSpeeds: [
 
-		{ start: 151, end: 20972, speed: 75},
+		{ start: -9194, end: 151, speed: 90 },
+		{ start: 151, end: 20972, speed: 75 },
 
+		{ start: -3793, end: -3525, speed: 60 },
+		{ start: -3525, end: -3288, speed: 45 },
+		
+		{ start: -1700, end: -1100, speed: 75 },
 
 		{ start: 22, end: 605, speed: 45 },
 		{ start: 4129, end: 5861, speed: 60 },
@@ -200,23 +203,23 @@ export const TestRoute: Route = {
 		{ start: 13380 + 7430, end: 13380 + 7580, speed: 25 },
 		{ start: 13380 + 7580, end: 13380 + 7700, speed: 15 },
 
-		{ start: -6647 - 100, end: -6647 + 20, speed: 45},
-		{ start: -4984 - 100, end: -4984 + 20, speed: 45},
-		{ start: -3313 - 100, end: -3313 + 20, speed: 45},
-		{ start: -1645 - 100, end: -1645 + 20, speed: 45},
-		{ start: 1716 - 100, end: 1716 + 20, speed: 45},
-		{ start: 4627 - 100, end: 4627 + 20, speed: 45},
-		{ start: 7365 - 100, end: 7365 + 20, speed: 45},
-		{ start: 8179 - 100, end: 8179 + 20, speed: 45},
-		{ start: 9115 - 100, end: 9115 + 20, speed: 45},
-		{ start: 11280 - 100, end: 11280 + 20, speed: 45},
-		{ start: 12100 - 100, end: 12100 + 20, speed: 45},
+		{ start: -6647 - 100, end: -6647 + 20, speed: 45 },
+		{ start: -4984 - 100, end: -4984 + 20, speed: 45 },
+		{ start: -3313 - 100, end: -3313 + 20, speed: 45 },
+		{ start: -1645 - 100, end: -1645 + 20, speed: 45 },
+		{ start: 1716 - 100, end: 1716 + 20, speed: 45 },
+		{ start: 4627 - 100, end: 4627 + 20, speed: 45 },
+		{ start: 7365 - 100, end: 7365 + 20, speed: 45 },
+		{ start: 8179 - 100, end: 8179 + 20, speed: 45 },
+		{ start: 9115 - 100, end: 9115 + 20, speed: 45 },
+		{ start: 11280 - 100, end: 11280 + 20, speed: 45 },
+		{ start: 12100 - 100, end: 12100 + 20, speed: 45 },
 	],
 	stopPositions: [
 		{ position: -9194, stationName: "西神中央", trackName: "2番線", isPass: false },
 		{ position: -6647, stationName: "西神南", trackName: "1番線", isPass: true },
 		{ position: -4984, stationName: "伊川谷", trackName: "1番線", isPass: true },
-		{ position: -3313, stationName: "学園都市", trackName: "1番線", isPass: true },
+		{ position: -3313, stationName: "学園都市", trackName: "1番線", isPass: false },
 		{ position: -1645, stationName: "総合運動公園", trackName: "1番線", isPass: true },
 		{ position: 151, stationName: "名谷", trackName: "1番線", isPass: false },
 		{ position: 1716, stationName: "妙法寺", trackName: "1番線", isPass: true },
@@ -224,14 +227,11 @@ export const TestRoute: Route = {
 		{ position: 5813, stationName: "新長田", trackName: "1番線", isPass: false },
 		{ position: 7365, stationName: "長田", trackName: "1番線", isPass: true },
 		{ position: 8179, stationName: "上沢", trackName: "1番線", isPass: true },
-		{ position: 9115, stationName: "湊川公園", trackName: "1番線", isPass: true },
+		{ position: 9115, stationName: "湊川公園", trackName: "1番線", isPass: false },
 		{ position: 10140, stationName: "大倉山", trackName: "1番線", isPass: true },
 		{ position: 11280, stationName: "県庁前", trackName: "1番線", isPass: true },
 		{ position: 12100, stationName: "三宮", trackName: "1番線", isPass: false },
 		{ position: 13416, stationName: "新神戸", trackName: "1番線", isPass: false },
 		{ position: 20972, stationName: "谷上", trackName: "4番線", isPass: false },
-
-		/* { position: 0, stationName: "福島", trackName: "1番線", isPass: false },
-		{ position: 2000, stationName: "梅田", trackName: "1番線", isPass: false } */
 	],
 };

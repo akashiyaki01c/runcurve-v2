@@ -53,6 +53,8 @@ export function getDecelBeforeSpeed(currentSpeed: number, vehicle: Vehicle, radi
 /** ランカーブ生成 */
 export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: number, endPos: number, maxSpeed: number): [number[], [number, NotchType][]] {
 	const limitMarginSpeed = 2;
+	const reAccelerationSpeed = 10;
+	const reAccelerationRatio = 0.80;
 
 	const length = endPos - startPos;
 	// 制限速度配列
@@ -106,18 +108,10 @@ export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: numbe
 					}
 				}
 				if (i % 10 === 0) {
-					const powerSpeed = get10sLaterPowerSpeed(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray, i, speed);
-					if (powerSpeed < (limitSpeedArray[i] - limitMarginSpeed)) {
-						const laterSpeed = get10sLaterPowerSpeed(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray, i, speed);
-						const laterDistance = get10sLaterPowerDistance(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray, i, speed);
-						if (laterSpeed !== 0 && laterSpeed < (limitSpeedArray[i] - limitMarginSpeed) && getBrakePatternDistance(brakePatternArray, laterSpeed, laterDistance) == -1) {
-							notchType = "Power";
-							notchOperate.push([i + startPos, "Power"]);
-						}
-						if (laterSpeed !== 0 && laterSpeed < (limitSpeedArray[i] - limitMarginSpeed) && (3.6 * getBrakePatternDistance(brakePatternArray, laterSpeed, laterDistance) / laterSpeed) > 5) {
-							notchType = "Power";
-							notchOperate.push([i + startPos, "Power"]);
-						}
+					if (limitSpeedArray[i] * reAccelerationRatio > speed) {
+						// 速度が一定速度以下
+						notchType = "Power";
+						notchOperate.push([i + startPos, "Power"]);
 					}
 				}
 				if (speed > (limitSpeedArray[i] - 4) && getNotchOffNextSpeed(speed, vehicle, curveArray[i], gradientArray[i], tunnelArray[i]) > speed) {
@@ -131,19 +125,26 @@ export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: numbe
 				break;
 			}
 			case "Constant": {
-				const powerSpeed = get10sLaterPowerSpeed(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray, i, speed);
-				if (powerSpeed < (limitSpeedArray[i] - limitMarginSpeed)) {
-					const laterSpeed = get10sLaterPowerSpeed(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray, i, speed);
-					const laterDistance = get10sLaterPowerDistance(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray, i, speed);
-					if (laterSpeed !== 0 && laterSpeed < (limitSpeedArray[i] - limitMarginSpeed) && getBrakePatternDistance(brakePatternArray, laterSpeed, laterDistance) == -1) {
-						notchType = "Power";
-						notchOperate.push([i + startPos, "Power"]);
-					}
-					if (laterSpeed !== 0 && laterSpeed < (limitSpeedArray[i] - limitMarginSpeed) && (3.6 * getBrakePatternDistance(brakePatternArray, laterSpeed, laterDistance) / laterSpeed) > 5) {
-						notchType = "Power";
-						notchOperate.push([i + startPos, "Power"]);
-					}
+				if (limitSpeedArray[i] * reAccelerationRatio > speed) {
+					// 速度が一定速度以下
+					notchType = "Power";
+					notchOperate.push([i + startPos, "Power"]);
 				}
+				/* const powerSpeed = get10sLaterPowerSpeed(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray, i, speed);
+				if (powerSpeed < (limitSpeedArray[i] - limitMarginSpeed)) {
+					// 速度が目標速度に達していない
+					const laterDistance = get10sLaterPowerDistance(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray, i, speed);
+					if (powerSpeed !== 0 && powerSpeed < (limitSpeedArray[i] - limitMarginSpeed) && getBrakePatternDistance(brakePatternArray, powerSpeed, laterDistance) == -1) {
+						// 10秒加速した時の速度が目標速度に達しない かつ ブレーキパターンが存在しないとき
+						notchType = "Power";
+						notchOperate.push([i + startPos, "Power"]);
+					}
+					if (powerSpeed !== 0 && powerSpeed < (limitSpeedArray[i] - limitMarginSpeed) && (3.6 * getBrakePatternDistance(brakePatternArray, powerSpeed, laterDistance) / powerSpeed) > 5) {
+						// 10秒加速した時の速度が目標速度に達しない かつ ブレーキパターンまで5秒以上のとき
+						notchType = "Power";
+						notchOperate.push([i + startPos, "Power"]);
+					}
+				} */
 				if (speed > (limitSpeedArray[i] - limitMarginSpeed)) {
 					// 速度が目標速度に達した
 					if (getNotchOffNextSpeed(speed, vehicle, curveArray[i], gradientArray[i], tunnelArray[i]) > speed) {

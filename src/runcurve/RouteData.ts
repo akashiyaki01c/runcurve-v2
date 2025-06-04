@@ -35,7 +35,20 @@ export function GetGradient(route: Route, vehicle: Vehicle, start: number, end: 
 		}
 	}
 
-	return result;
+	const resultBlur: number[] = [...Array(result.length)].map(_ => 0);
+	for (let i = 0; i < resultBlur.length; i++) {
+		let sum = 0;
+		for (let j = -Math.round(vehicle.trainLength / 2); j < Math.round(vehicle.trainLength / 2); j++) {
+			let index = i + j;
+			if (index < 0) index = 0;
+			if (index > result.length - 1) index = result.length - 1;
+
+			sum += result[index]
+		}
+		resultBlur[i] = sum / vehicle.trainLength;
+	}
+
+	return resultBlur;
 }
 
 /** 路線上の1mごとの曲線半径を求める関数 */
