@@ -130,21 +130,6 @@ export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: numbe
 					notchType = "Power";
 					notchOperate.push([i + startPos, "Power"]);
 				}
-				/* const powerSpeed = get10sLaterPowerSpeed(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray, i, speed);
-				if (powerSpeed < (limitSpeedArray[i] - limitMarginSpeed)) {
-					// 速度が目標速度に達していない
-					const laterDistance = get10sLaterPowerDistance(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray, i, speed);
-					if (powerSpeed !== 0 && powerSpeed < (limitSpeedArray[i] - limitMarginSpeed) && getBrakePatternDistance(brakePatternArray, powerSpeed, laterDistance) == -1) {
-						// 10秒加速した時の速度が目標速度に達しない かつ ブレーキパターンが存在しないとき
-						notchType = "Power";
-						notchOperate.push([i + startPos, "Power"]);
-					}
-					if (powerSpeed !== 0 && powerSpeed < (limitSpeedArray[i] - limitMarginSpeed) && (3.6 * getBrakePatternDistance(brakePatternArray, powerSpeed, laterDistance) / powerSpeed) > 5) {
-						// 10秒加速した時の速度が目標速度に達しない かつ ブレーキパターンまで5秒以上のとき
-						notchType = "Power";
-						notchOperate.push([i + startPos, "Power"]);
-					}
-				} */
 				if (speed > (limitSpeedArray[i] - limitMarginSpeed)) {
 					// 速度が目標速度に達した
 					if (getNotchOffNextSpeed(speed, vehicle, curveArray[i], gradientArray[i], tunnelArray[i]) > speed) {
@@ -325,7 +310,7 @@ function get10sLaterPowerSpeed(_route: Route, vehicle: Vehicle, _startPos: numbe
 		currentSpeed = getAccelNextSpeed(currentSpeed, vehicle, curveArray[index], gradientArray[index], tunnelArray[index]);
 		speedHistory.push(currentSpeed);
 
-		if (speedHistory.reduce((p, v) => p + (3.6 / v), 0) > 5) {
+		if (speedHistory.reduce((p, v) => p + (3.6 / v), 0) > 10) {
 			return currentSpeed;
 		}
 		index++;
@@ -345,7 +330,7 @@ function get10sLaterPowerDistance(_route: Route, vehicle: Vehicle, _startPos: nu
 		currentSpeed = getNotchOffNextSpeed(currentSpeed, vehicle, curveArray[index], gradientArray[index], tunnelArray[index]);
 		speedHistory.push(currentSpeed);
 
-		if (speedHistory.reduce((p, v) => p + (3.6 / v), 0) > 5) {
+		if (speedHistory.reduce((p, v) => p + (3.6 / v), 0) > 10) {
 			return index;
 		}
 		index++;
