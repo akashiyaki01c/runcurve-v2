@@ -5,18 +5,19 @@ import {
   Curve,
   Gradient,
   LimitSpeed,
+  Route,
   StopPosition,
   TestRoute,
 } from "./model/Route";
-import { TestVehicle } from "./model/Vehicle";
+import { SetForceData, TestVehicle, Vehicle } from "./model/Vehicle";
 import { RuncurveResult } from "./model/Runcurve";
 import { Graph } from "./graph/Graph";
 import { GetRuncurveLine, GetRuncurveLineTime } from "./runcurve/RuncurveLine";
 import { Timetable } from "./graph/Timetable";
 
 function App() {
-  const [route, setRoute] = useState(TestRoute);
-  const [vehicle, setVehicle] = useState(TestVehicle);
+  const [route, setRoute] = useState(new Route());
+  const [vehicle, setVehicle] = useState(new Vehicle());
 
   const [runcurve, setRuncurve] = useState([] as RuncurveResult[]);
 
@@ -24,10 +25,17 @@ function App() {
 
   return (
     <>
-      <div className="flex">
-        <div className="flex-1/2">
+      <div className="flex w-[100%]">
+        <div className="flex-1/2 w-[50cqw]">
           {/* 路線エディタ */}
           <h2 className="text-3xl">路線設定</h2>
+          <button
+            onClick={() => {
+              setRoute(TestRoute);
+            }}
+          >
+            テストデータを読み込む
+          </button>
           <div>
             <label>
               路線名
@@ -358,23 +366,30 @@ function App() {
             </div>
           </div>
           <div>
-            <label>
-              JSON入出力
+            <h3 className="text-2xl">JSON入出力</h3>
+            <div className="w-[100%]">
               <textarea
                 value={JSON.stringify(route)}
                 onChange={(v) => {
                   const value = JSON.parse(v.target.value) || {};
                   setRoute({ ...route, ...value });
                 }}
-                className="border-slate-900 border-1 rounded-xs m-1"
+                className="border-slate-900 border-1 rounded-xs m-1 w-[90%] h-[10ric]"
               />
-            </label>
+            </div>
           </div>
         </div>
         <div className="h-100% border-r-1 border-slate-900"></div>
         <div className="flex-1/2">
           {/* 車両エディタ */}
           <h2 className="text-3xl">車両設定</h2>
+          <button
+            onClick={() => {
+              setVehicle(TestVehicle);
+            }}
+          >
+            テストデータを読み込む
+          </button>
           <div>
             <label>
               車両名
@@ -494,12 +509,175 @@ function App() {
               %
             </label>
           </div>
+          <div>
+            <label>
+              起動加速度
+              <input
+                type="text"
+                value={vehicle.startupAcceleration}
+                onChange={(v) => {
+                  vehicle.startupAcceleration = Number(v.target.value) || 0;
+                  setVehicle({ ...vehicle });
+                }}
+                className="w-24 border-slate-900 border-1 rounded-xs m-1"
+              />
+              km/h/s
+            </label>
+          </div>
+          <div>
+            <label>
+              減速度
+              <input
+                type="text"
+                value={vehicle.deceleration}
+                onChange={(v) => {
+                  vehicle.deceleration = Number(v.target.value) || 0;
+                  setVehicle({ ...vehicle });
+                }}
+                className="w-24 border-slate-900 border-1 rounded-xs m-1"
+              />
+              km/h/s
+            </label>
+          </div>
+          <div>
+            <label>
+              定トルク領域終了速度
+              <input
+                type="text"
+                value={vehicle.fixedTorqueSpeed}
+                onChange={(v) => {
+                  vehicle.fixedTorqueSpeed = Number(v.target.value) || 0;
+                  setVehicle({ ...vehicle });
+                }}
+                className="w-24 border-slate-900 border-1 rounded-xs m-1"
+              />
+              km/h
+            </label>
+          </div>
+          <div>
+            <label>
+              定出力領域終了領域
+              <input
+                type="text"
+                value={vehicle.constantPowerSpeed}
+                onChange={(v) => {
+                  vehicle.constantPowerSpeed = Number(v.target.value) || 0;
+                  setVehicle({ ...vehicle });
+                }}
+                className="w-24 border-slate-900 border-1 rounded-xs m-1"
+              />
+              km/h
+            </label>
+          </div>
+          <div>
+            <label>
+              M車の両数
+              <input
+                type="text"
+                value={vehicle.mCars}
+                onChange={(v) => {
+                  vehicle.mCars = Number(v.target.value) || 0;
+                  setVehicle({ ...vehicle });
+                }}
+                className="w-24 border-slate-900 border-1 rounded-xs m-1"
+              />
+              両
+            </label>
+          </div>
+          <div>
+            <label>
+              T車の両数
+              <input
+                type="text"
+                value={vehicle.tCars}
+                onChange={(v) => {
+                  vehicle.tCars = Number(v.target.value) || 0;
+                  setVehicle({ ...vehicle });
+                }}
+                className="w-24 border-slate-900 border-1 rounded-xs m-1"
+              />
+              両
+            </label>
+          </div>
+          <div>
+            <label>
+              M車の重量
+              <input
+                type="text"
+                value={vehicle.mWeight}
+                onChange={(v) => {
+                  vehicle.mWeight = Number(v.target.value) || 0;
+                  setVehicle({ ...vehicle });
+                }}
+                className="w-24 border-slate-900 border-1 rounded-xs m-1"
+              />
+              t
+            </label>
+          </div>
+          <div>
+            <label>
+              T車の重量
+              <input
+                type="text"
+                value={vehicle.tWeight}
+                onChange={(v) => {
+                  vehicle.tWeight = Number(v.target.value) || 0;
+                  setVehicle({ ...vehicle });
+                }}
+                className="w-24 border-slate-900 border-1 rounded-xs m-1"
+              />
+              km/h
+            </label>
+          </div>
+          <div>
+            <label>
+              定出力領域の定数
+              <input
+                type="text"
+                value={vehicle.coefficient0}
+                onChange={(v) => {
+                  vehicle.coefficient0 = Number(v.target.value) || 0;
+                  setVehicle({ ...vehicle });
+                }}
+                className="w-24 border-slate-900 border-1 rounded-xs m-1"
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              特性領域の定数
+              <input
+                type="text"
+                value={vehicle.coefficient1}
+                onChange={(v) => {
+                  vehicle.coefficient1 = Number(v.target.value) || 0;
+                  setVehicle({ ...vehicle });
+                }}
+                className="w-24 border-slate-900 border-1 rounded-xs m-1"
+              />
+            </label>
+          </div>
+          <div>
+            <h3 className="text-2xl">JSON入出力</h3>
+            <div className="w-[100%]">
+              <textarea
+                value={JSON.stringify(vehicle)}
+                onChange={(v) => {
+                  const value = JSON.parse(v.target.value) || {};
+                  setVehicle({ ...vehicle, ...value });
+                }}
+                className="border-slate-900 border-1 rounded-xs m-1 w-[90%] h-[10ric]"
+              />
+            </div>
+          </div>
         </div>
       </div>
       <hr />
       <div>
         <button
-          onClick={(_) => setRuncurve(GetRuncurveLine(route, vehicle, 100))}
+          onClick={(_) =>
+            setRuncurve(GetRuncurveLine(route, SetForceData(vehicle), 100))
+          }
         >
           計算実行
         </button>

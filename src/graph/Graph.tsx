@@ -128,8 +128,7 @@ export function Graph({
             stroke="red"
             fill="none"
             points={splitTime(v, route)
-              .runcurveArray.filter((_, i) => i % 1 === 0)
-              .map((v) => {
+              .runcurveArray.map((v) => {
                 return { ...v, time: v.time % 120 };
               })
               .map(
@@ -149,7 +148,6 @@ export function Graph({
             stroke="blue"
             fill="none"
             points={v.runcurveArray
-              .filter((_, i) => i % 1 === 0)
               .map(
                 (v) =>
                   `${(v.distance - start) * xScale},${
