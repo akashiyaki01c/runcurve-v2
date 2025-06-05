@@ -187,7 +187,11 @@ export const TestRoute: Route = {
 		
 		{ start: -1700, end: -1100, speed: 75 },
 
-		{ start: 22, end: 605, speed: 45 },
+		{ start: -650, end: -208, speed: 75 },
+		{ start: -208, end: 22, speed: 45 },
+		{ start: 22, end: 151, speed: 25 },
+
+		{ start: 151, end: 605, speed: 45 },
 		{ start: 4129, end: 5861, speed: 60 },
 
 		{ start: 6551, end: 6900, speed: 60 },

@@ -1,7 +1,13 @@
 import { useState } from "react";
 
 import "./App.css";
-import { TestRoute } from "./model/Route";
+import {
+  Curve,
+  Gradient,
+  LimitSpeed,
+  StopPosition,
+  TestRoute,
+} from "./model/Route";
 import { TestVehicle } from "./model/Vehicle";
 import { RuncurveResult } from "./model/Runcurve";
 import { Graph } from "./graph/Graph";
@@ -38,17 +44,240 @@ function App() {
           </div>
           <div>
             <h3 className="text-2xl">勾配設定</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>位置(m)</th>
-                  <th>勾配(‰)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {route.gradients
-                  .sort((a, b) => a.position - b.position)
-                  .map((v, i) => (
+            <div className="overflow-y-scroll h-[30vh] p-1 m-2 border-1 border-slate-500">
+              <table>
+                <thead>
+                  <tr>
+                    <th>位置(m)</th>
+                    <th>勾配(‰)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {route.gradients
+                    /* .sort((a, b) => a.position - b.position) */
+                    .map((v, i) => (
+                      <tr key={v.position} className="p-1">
+                        <td>
+                          <input
+                            type="number"
+                            value={v.position}
+                            onChange={(e) => {
+                              v.position = Number(e.target.value) || 0;
+                              setRoute({ ...route });
+                            }}
+                            className="w-24 border-slate-900 border-1 rounded-xs m-1"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            value={v.value}
+                            onChange={(e) => {
+                              v.value = Number(e.target.value) || 0;
+                              setRoute({ ...route });
+                            }}
+                            className="w-24 border-slate-900 border-1 rounded-xs m-1"
+                          />
+                        </td>
+                        <td>
+                          <button
+                            onClick={() => {
+                              route.gradients = route.gradients.filter(
+                                (_, _i) => _i !== i
+                              );
+                              setRoute({ ...route });
+                            }}
+                          >
+                            削除
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  <tr>
+                    <td>
+                      <button
+                        onClick={() => {
+                          route.gradients.push(new Gradient());
+                          setRoute({ ...route });
+                        }}
+                      >
+                        追加
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <h3 className="text-2xl">曲線設定</h3>
+            <div className="overflow-y-scroll h-[30vh] p-1 m-2 border-1 border-slate-500">
+              <table>
+                <thead>
+                  <tr>
+                    <th>開始位置(m)</th>
+                    <th>終了位置(m)</th>
+                    <th>曲線半径(m)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {route.curves.map((v, i) => (
+                    <tr key={v.start} className="p-1">
+                      <td>
+                        <input
+                          type="number"
+                          value={v.start}
+                          onChange={(e) => {
+                            v.start = Number(e.target.value) || 0;
+                            setRoute({ ...route });
+                          }}
+                          className="w-24 border-slate-900 border-1 rounded-xs m-1"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          value={v.end}
+                          onChange={(e) => {
+                            v.end = Number(e.target.value) || 0;
+                            setRoute({ ...route });
+                          }}
+                          className="w-24 border-slate-900 border-1 rounded-xs m-1"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          value={v.radius}
+                          onChange={(e) => {
+                            v.radius = Number(e.target.value) || 0;
+                            setRoute({ ...route });
+                          }}
+                          className="w-24 border-slate-900 border-1 rounded-xs m-1"
+                        />
+                      </td>
+                      <td>
+                        <button
+                          onClick={() => {
+                            route.curves = route.curves.filter(
+                              (_, _i) => _i !== i
+                            );
+                            setRoute({ ...route });
+                          }}
+                        >
+                          削除
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <td>
+                      <td>
+                        <button
+                          onClick={() => {
+                            route.curves.push(new Curve());
+                            setRoute({ ...route });
+                          }}
+                        >
+                          追加
+                        </button>
+                      </td>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <h3 className="text-2xl">速度制限設定</h3>
+            <div className="overflow-y-scroll h-[30vh] p-1 m-2 border-1 border-slate-500">
+              <table>
+                <thead>
+                  <tr>
+                    <th>開始位置(m)</th>
+                    <th>終了位置(m)</th>
+                    <th>速度(km/h)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {route.limitSpeeds.map((v, i) => (
+                    <tr key={v.start} className="p-1">
+                      <td>
+                        <input
+                          type="number"
+                          value={v.start}
+                          onChange={(e) => {
+                            v.start = Number(e.target.value) || 0;
+                            setRoute({ ...route });
+                          }}
+                          className="w-24 border-slate-900 border-1 rounded-xs m-1"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          value={v.end}
+                          onChange={(e) => {
+                            v.end = Number(e.target.value) || 0;
+                            setRoute({ ...route });
+                          }}
+                          className="w-24 border-slate-900 border-1 rounded-xs m-1"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          value={v.speed}
+                          onChange={(e) => {
+                            v.speed = Number(e.target.value) || 0;
+                            setRoute({ ...route });
+                          }}
+                          className="w-24 border-slate-900 border-1 rounded-xs m-1"
+                        />
+                      </td>
+                      <td>
+                        <td>
+                          <button
+                            onClick={() => {
+                              route.limitSpeeds = route.limitSpeeds.filter(
+                                (_, _i) => _i !== i
+                              );
+                              setRoute({ ...route });
+                            }}
+                          >
+                            削除
+                          </button>
+                        </td>
+                      </td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <td>
+                      <td>
+                        <button
+                          onClick={() => {
+                            route.limitSpeeds.push(new LimitSpeed());
+                            setRoute({ ...route });
+                          }}
+                        >
+                          追加
+                        </button>
+                      </td>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 className="text-2xl">駅設定</h3>
+            <div className="overflow-y-scroll h-[30vh] p-1 m-2 border-1 border-slate-500">
+              <table>
+                <thead>
+                  <tr>
+                    <th>停車位置(m)</th>
+                    <th>駅名</th>
+                    <th>駅番線</th>
+                    <th>通過フラグ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {route.stopPositions.map((v, i) => (
                     <tr key={v.position} className="p-1">
                       <td>
                         <input
@@ -63,129 +292,70 @@ function App() {
                       </td>
                       <td>
                         <input
-                          type="number"
-                          value={v.value}
+                          type="text"
+                          value={v.stationName}
                           onChange={(e) => {
-                            v.value = Number(e.target.value) || 0;
+                            v.stationName = e.target.value || "";
                             setRoute({ ...route });
                           }}
                           className="w-24 border-slate-900 border-1 rounded-xs m-1"
                         />
                       </td>
                       <td>
-                        <button
-                          onClick={() => {
-                            route.gradients = route.gradients.filter(
-                              (_, _i) => _i !== i
-                            );
+                        <input
+                          type="text"
+                          value={v.trackName}
+                          onChange={(e) => {
+                            v.trackName = e.target.value || "";
                             setRoute({ ...route });
                           }}
-                        >
-                          削除
-                        </button>
+                          className="w-24 border-slate-900 border-1 rounded-xs m-1"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={v.isPass}
+                          onChange={(e) => {
+                            v.isPass = e.target.checked;
+                            setRoute({ ...route });
+                          }}
+                          className="w-24 border-slate-900 border-1 rounded-xs m-1"
+                        />
+                      </td>
+                      <td>
+                        <td>
+                          <button
+                            onClick={() => {
+                              route.stopPositions = route.stopPositions.filter(
+                                (_, _i) => _i !== i
+                              );
+                              setRoute({ ...route });
+                            }}
+                          >
+                            削除
+                          </button>
+                        </td>
                       </td>
                     </tr>
                   ))}
-              </tbody>
-            </table>
-            <h3 className="text-2xl">曲線設定</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>開始位置(m)</th>
-                  <th>終了位置(m)</th>
-                  <th>曲線半径(m)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {route.curves.map((v) => (
-                  <tr key={v.start} className="p-1">
+                  <tr>
                     <td>
-                      <input
-                        type="number"
-                        value={v.start}
-                        onChange={(e) => {
-                          v.start = Number(e.target.value) || 0;
-                          setRoute({ ...route });
-                        }}
-                        className="w-24 border-slate-900 border-1 rounded-xs m-1"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        value={v.end}
-                        onChange={(e) => {
-                          v.end = Number(e.target.value) || 0;
-                          setRoute({ ...route });
-                        }}
-                        className="w-24 border-slate-900 border-1 rounded-xs m-1"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        value={v.radius}
-                        onChange={(e) => {
-                          v.radius = Number(e.target.value) || 0;
-                          setRoute({ ...route });
-                        }}
-                        className="w-24 border-slate-900 border-1 rounded-xs m-1"
-                      />
+                      <td>
+                        <button
+                          onClick={() => {
+                            route.stopPositions.push(new StopPosition());
+                            setRoute({ ...route });
+                          }}
+                        >
+                          追加
+                        </button>
+                      </td>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            <h3 className="text-2xl">速度制限設定</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>開始位置(m)</th>
-                  <th>終了位置(m)</th>
-                  <th>速度(km/h)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {route.limitSpeeds.map((v) => (
-                  <tr key={v.start} className="p-1">
-                    <td>
-                      <input
-                        type="number"
-                        value={v.start}
-                        onChange={(e) => {
-                          v.start = Number(e.target.value) || 0;
-                          setRoute({ ...route });
-                        }}
-                        className="w-24 border-slate-900 border-1 rounded-xs m-1"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        value={v.end}
-                        onChange={(e) => {
-                          v.end = Number(e.target.value) || 0;
-                          setRoute({ ...route });
-                        }}
-                        className="w-24 border-slate-900 border-1 rounded-xs m-1"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        value={v.speed}
-                        onChange={(e) => {
-                          v.speed = Number(e.target.value) || 0;
-                          setRoute({ ...route });
-                        }}
-                        className="w-24 border-slate-900 border-1 rounded-xs m-1"
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
           <div>
             <label>
