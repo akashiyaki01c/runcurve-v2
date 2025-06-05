@@ -26,7 +26,7 @@ export function Graph({
         height={maxSpeed * yScale + 200}
       >
         {/* 縦軸 */}
-        {/* {[...Array(length + 1).keys()].map((v) =>
+        {[...Array(length + 1).keys()].map((v) =>
           (v + start) % 200 === 0 ? (
             <line
               key={`x-line-${v}`}
@@ -49,8 +49,8 @@ export function Graph({
           ) : (
             <></>
           )
-        )} */}
-        {/* {[...Array(length + 1).keys()].map((v) =>
+        )}
+        {[...Array(length + 1).keys()].map((v) =>
           (v + start) % 1000 === 0 ? (
             <text
               key={`x-text-${v}`}
@@ -74,7 +74,7 @@ export function Graph({
           ) : (
             <></>
           )
-        )} */}
+        )}
         {/* 横軸 */}
         {[...Array(maxSpeed + 1).keys()].map((v) =>
           v % 10 === 0 ? (
