@@ -216,7 +216,7 @@ export function Graph({
             </text>
           </>
         ))}
-        {pairwiseSplit([new Curve(), ...route.curves]).map((v) => (
+        {pairwiseSplit([...route.curves]).map((v) => (
           <>
             <polyline
               key={`curve-between-${v[0].end}-${v[1]}`}
@@ -228,6 +228,24 @@ export function Graph({
             />
           </>
         ))}
+        <polyline
+          key={`curve-between-0-${route.curves[0]}`}
+          stroke="black"
+          fill="none"
+          points={`0,${(maxSpeed + 15) * yScale} ${
+            (route.curves[0]?.start - start) * xScale
+          },${(maxSpeed + 15) * yScale}`}
+        />
+        <polyline
+          key={`curve-between-${route.curves[route.curves.length - 1]}-0`}
+          stroke="black"
+          fill="none"
+          points={`${(route.curves[route.curves.length - 1]?.end - start) * xScale},${
+            (maxSpeed + 15) * yScale
+          } ${(length) * xScale},${
+            (maxSpeed + 15) * yScale
+          }`}
+        />
         {/* 勾配 */}
         {route.gradients.map((v) => (
           <>
