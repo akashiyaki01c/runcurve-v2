@@ -676,7 +676,7 @@ function App() {
       <div>
         <button
           onClick={(_) =>
-            setRuncurve(GetRuncurveLine(route, SetForceData(vehicle), 100))
+            setRuncurve(GetRuncurveLine(route, SetForceData(vehicle), vehicle.maxSpeed))
           }
         >
           計算実行
