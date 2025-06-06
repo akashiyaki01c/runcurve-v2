@@ -69,7 +69,7 @@ export function ForceInterpolation(data: VelocityForceTable, speed: number) {
 }
 
 export const TestVehicle: Vehicle = {
-    name: "6000形",
+    name: "テスト編成",
     maxSpeed: 100,
     numberOfCars: 6,
     trainLength: 19.5 * 6,
