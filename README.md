@@ -1,54 +1,43 @@
-# React + TypeScript + Vite
+# ランカーブ生成器
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 概要
 
-Currently, two official plugins are available:
+実際の鉄道で使用されている"ランカーブ"を生成できる架空鉄道作者向け支援ツールです。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+デプロイ先サイト → [akashiyaki01c.github.io/runcurve-v2/](https://akashiyaki01c.github.io/runcurve-v2/)
 
-## Expanding the ESLint configuration
+## 機能
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
++ 路線編集機能
+  + ランカーブを生成するための路線データを編集することができます。
++ 車両編集機能
+  + ランカーブを生成するための車両データを編集することができます。
++ データ入出力機能
+  + データをJSONで入出力することができます。
+  + **データはリロードで消えます。必ずJSON出力を行いデータの保存をするように注意してください。**
++ ランカーブ生成機能
+  + ランカーブを生成し、ランカーブ図、計算時秒の表を表示します。
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## License
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+MIT License
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 使用ライブラリ
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+### Tailwind CSS (MIT License)
+
+> Copyright (c) Tailwind Labs, Inc.
+
+[GitHub repo](https://github.com/tailwindlabs/tailwindcss)
+
+### React (MIT License)
+
+> Copyright (c) Meta Platforms, Inc. and affiliates.
+
+[GitHub repo](https://github.com/facebook/react)
+
+### Vite (MIT License)
+
+> Copyright (c) 2019-present, VoidZero Inc. and Vite contributors
+
+[GitHub repo](https://github.com/vitejs/vite)
