@@ -1,4 +1,4 @@
-import { Curve, Route } from "../model/Route";
+import { Route } from "../model/Route";
 import { NotchType, RuncurveResult } from "../model/Runcurve";
 
 export function Graph({

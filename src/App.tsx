@@ -20,9 +20,7 @@ function App() {
   const [vehicle, setVehicle] = useState(new Vehicle());
 
   const [runcurve, setRuncurve] = useState([] as RuncurveResult[]);
-
-  // const runcurve = GetRuncurveSpeedAndTime(props.route, props.vehicle, 151, 1716, 75);
-
+  
   return (
     <>
       <div className="flex w-[100%]">
@@ -675,7 +673,7 @@ function App() {
       <hr />
       <div>
         <button
-          onClick={(_) =>
+          onClick={() =>
             setRuncurve(GetRuncurveLine(route, SetForceData(vehicle), vehicle.maxSpeed))
           }
         >

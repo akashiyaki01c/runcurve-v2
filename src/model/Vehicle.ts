@@ -111,11 +111,11 @@ export const TestVehicle: Vehicle = {
 // maxSpeed: 最高速度[km/h]
 // => 1km/h刻みの編成走行抵抗[kgf]
 function defaultRunningResistance(mCars: number, tCars: number, mWeight: number, tWeight: number, maxSpeed: number): [number, number][] {
-    let result: [number, number][] = [];
+    const result: [number, number][] = [];
     for (let i = 0; i < maxSpeed; i++) {
-        let motorCarResistance = (1.65 + 0.0247 * i) * (mCars * mWeight);
-        let trailerCarResistance = (0.78 + 0.028 * i) * (tCars * tWeight);
-        let airResistance = (0.028 + 0.0078 * (mCars + tCars - 1) * i ** 2);
+        const motorCarResistance = (1.65 + 0.0247 * i) * (mCars * mWeight);
+        const trailerCarResistance = (0.78 + 0.028 * i) * (tCars * tWeight);
+        const airResistance = (0.028 + 0.0078 * (mCars + tCars - 1) * i ** 2);
         result.push([i, (motorCarResistance + trailerCarResistance + airResistance)]);
     }
     // 出発抵抗を考慮
@@ -144,25 +144,25 @@ function defaultTractiveForce(
     mCars: number, tCars: number, mWeight: number, tWeight: number,
     coefficient0: number, coefficient1: number
 ) {
-    let result: [number, number][] = []; // kgf
+    const result: [number, number][] = []; // kgf
 
     { // 定トルク領域 [0..fixedTorqueSpeed)
         // 編成重量[kg] * 起動加速度[m/s^2] / 9.807 = F[kgf]
-        let fixedTorque = (startupAcceleration / 3.6) * (mCars * mWeight + tCars * tWeight) * 1000 / 9.807;
+        const fixedTorque = (startupAcceleration / 3.6) * (mCars * mWeight + tCars * tWeight) * 1000 / 9.807;
         for (let i = 0; i < fixedTorqueSpeed; i++) {
             result.push([i, fixedTorque]);
         }
     }
 
     { // 定出力領域 [fixedTorqueSpeed..constantPowerSpeed)
-        let constant = fixedTorqueSpeed ** coefficient0 * result[result.length - 1][1];
+        const constant = fixedTorqueSpeed ** coefficient0 * result[result.length - 1][1];
         for (let i = fixedTorqueSpeed; i < constantPowerSpeed; i++) {
             result.push([i, constant / i ** coefficient0]);
         }
     }
 
     { // 特性領域 [constantPowerSpeed..maxSpeed)
-        let constant = constantPowerSpeed ** coefficient1 * result[result.length - 1][1];
+        const constant = constantPowerSpeed ** coefficient1 * result[result.length - 1][1];
         for (let i = constantPowerSpeed; i < maxSpeed; i++) {
             result.push([i, constant / i ** coefficient1]);
         }

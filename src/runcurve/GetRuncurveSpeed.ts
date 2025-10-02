@@ -1,6 +1,6 @@
-import { LimitSpeed, Route, TestRoute } from "../model/Route";
+import { LimitSpeed, Route } from "../model/Route";
 import { NotchType, RuncurveResult } from "../model/Runcurve";
-import { ForceInterpolation, TestVehicle, Vehicle } from "../model/Vehicle";
+import { ForceInterpolation, Vehicle } from "../model/Vehicle";
 import { GetCurveRadius, GetGradient, GetTunnel } from "./RouteData";
 
 // 惰行時、1m先の速度を求める
@@ -12,7 +12,7 @@ export function getNotchOffNextSpeed(currentSpeed: number, vehicle: Vehicle, rad
 	if (radius != 0)
 		force -= 800 / radius;
 
-	let acceleration = force / 30.9;
+	const acceleration = force / 30.9;
 	return Math.sqrt((currentSpeed / 3.6) ** 2 + (2 * acceleration / 3.6)) * 3.6;
 }
 
@@ -25,7 +25,7 @@ export function getAccelNextSpeed(currentSpeed: number, vehicle: Vehicle, radius
 	if (radius != 0)
 		force -= 800 / radius;
 
-	let acceleration = force / 30.9;
+	const acceleration = force / 30.9;
 	return Math.sqrt((currentSpeed / 3.6) ** 2 + (2 * acceleration / 3.6)) * 3.6;
 }
 
@@ -46,15 +46,14 @@ export function getDecelBeforeSpeed(currentSpeed: number, vehicle: Vehicle, radi
 	if (radius != 0)
 		force += 800 / radius;
 
-	let acceleration = force / 30.9;
+	const acceleration = force / 30.9;
 	return Math.sqrt((currentSpeed / 3.6) ** 2 + (2 * acceleration / 3.6)) * 3.6;
 }
 
 /** ランカーブ生成 */
 export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: number, endPos: number, maxSpeed: number): [number[], [number, NotchType][]] {
 	const limitMarginSpeed = 2;
-	const reAccelerationSpeed = 10;
-	const reAccelerationRatio = 0.80;
+	const reAccelerationRatio = 0.90;
 
 	const length = endPos - startPos;
 	// 制限速度配列
@@ -65,7 +64,7 @@ export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: numbe
 
 	// ブレーキパターン配列
 	const brakePatternArray = getLimitSpeedBrakePatternArray(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray);
-	const speedArray: number[] = [...Array(endPos - startPos)].map(_ => 0);
+	const speedArray: number[] = [...Array(endPos - startPos)].map(() => 0);
 
 	const notchOperate: [number, NotchType][] = [];
 
@@ -114,7 +113,7 @@ export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: numbe
 						notchOperate.push([i + startPos, "Power"]);
 					}
 				}
-				if (speed > (limitSpeedArray[i] - 4) && getNotchOffNextSpeed(speed, vehicle, curveArray[i], gradientArray[i], tunnelArray[i]) > speed) {
+				if (speed > (limitSpeedArray[i] - limitMarginSpeed) && getNotchOffNextSpeed(speed, vehicle, curveArray[i], gradientArray[i], tunnelArray[i]) > speed) {
 					notchType = "Constant";
 					notchOperate.push([i + startPos, "Constant"]);
 				}
@@ -198,7 +197,7 @@ export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: numbe
 }
 
 export function GetRuncurveTime(speedArray: number[]) {
-	const result = [...Array(speedArray.length)].map(_ => 0);
+	const result = [...Array(speedArray.length)].map(() => 0);
 	let currentTime = 0;
 
 	for (let i = 0; i < result.length; i++) {
@@ -218,7 +217,7 @@ export function GetRuncurveSpeedAndTime(route: Route, vehicle: Vehicle, startPos
 	const time = GetRuncurveTime(speed[0]);
 	const result = {
 		notches: speed[1],
-		runcurveArray: [...Array(speed[0].length)].map(_ => { return { distance: 0, speed: 0, time: 0 } })
+		runcurveArray: [...Array(speed[0].length)].map(() => { return { distance: 0, speed: 0, time: 0 } })
 	} satisfies RuncurveResult;
 	for (let i = 0; i < result.runcurveArray.length; i++) {
 		result.runcurveArray[i] = { distance: i + startPos, speed: speed[0][i], time: time[i] };
@@ -228,7 +227,7 @@ export function GetRuncurveSpeedAndTime(route: Route, vehicle: Vehicle, startPos
 
 // 制限速度の1mごとの配列
 function getLimitSpeedArray(route: Route, _vehicle: Vehicle, startPos: number, endPos: number, maxSpeed: number) {
-	const result: number[] = [...Array(endPos - startPos)].map(_ => maxSpeed);
+	const result: number[] = [...Array(endPos - startPos)].map(() => maxSpeed);
 
 	for (const limitSpeed of route.limitSpeeds.sort((a, b) => b.speed - a.speed)) {
 		// 制限速度がstart-endの範囲外
@@ -247,7 +246,7 @@ function getLimitSpeedArray(route: Route, _vehicle: Vehicle, startPos: number, e
 
 // 制限速度への減速パターン配列
 function getLimitSpeedBrakePatternArray(route: Route, vehicle: Vehicle, startPos: number, endPos: number, limitSpeedArray: number[], curveArray: number[], gradientArray: number[], tunnelArray: number[]) {
-	const result: number[] = [...Array(endPos - startPos)].map(_ => -1);
+	const result: number[] = [...Array(endPos - startPos)].map(() => -1);
 	const limitSpeeds = [...route.limitSpeeds, { start: endPos - 1, end: endPos, speed: 0 } satisfies LimitSpeed];
 	const limitMarginSpeed = 2;
 
@@ -297,66 +296,6 @@ function get10sLaterNotchOffSpeed(_route: Route, vehicle: Vehicle, _startPos: nu
 	}
 }
 
-// 力行で10秒間走った時の速度
-function get10sLaterPowerSpeed(_route: Route, vehicle: Vehicle, _startPos: number, _endPos: number, limitSpeedArray: number[], curveArray: number[], gradientArray: number[], tunnelArray: number[], index: number, currentSpeed: number) {
-	const speedHistory = [currentSpeed];
-	if (currentSpeed == 0) {
-		return 0;
-	}
-	while (true) {
-		if (limitSpeedArray.length <= index) {
-			return 0;
-		}
-		currentSpeed = getAccelNextSpeed(currentSpeed, vehicle, curveArray[index], gradientArray[index], tunnelArray[index]);
-		speedHistory.push(currentSpeed);
-
-		if (speedHistory.reduce((p, v) => p + (3.6 / v), 0) > 10) {
-			return currentSpeed;
-		}
-		index++;
-	}
-}
-
-// 力行で10秒間走った時の距離
-function get10sLaterPowerDistance(_route: Route, vehicle: Vehicle, _startPos: number, _endPos: number, limitSpeedArray: number[], curveArray: number[], gradientArray: number[], tunnelArray: number[], index: number, currentSpeed: number) {
-	const speedHistory = [currentSpeed];
-	if (currentSpeed == 0) {
-		return 0;
-	}
-	while (true) {
-		if (limitSpeedArray.length <= index) {
-			return 0;
-		}
-		currentSpeed = getNotchOffNextSpeed(currentSpeed, vehicle, curveArray[index], gradientArray[index], tunnelArray[index]);
-		speedHistory.push(currentSpeed);
-
-		if (speedHistory.reduce((p, v) => p + (3.6 / v), 0) > 10) {
-			return index;
-		}
-		index++;
-	}
-}
-
-// 惰行で10秒間走った時の距離
-function _get10sLaterNotchOffDistance(_route: Route, vehicle: Vehicle, _startPos: number, _endPos: number, limitSpeedArray: number[], curveArray: number[], gradientArray: number[], tunnelArray: number[], index: number, currentSpeed: number) {
-	const speedHistory = [currentSpeed];
-	if (currentSpeed == 0) {
-		return 0;
-	}
-	while (true) {
-		if (limitSpeedArray.length <= index) {
-			return 0;
-		}
-		currentSpeed = getNotchOffNextSpeed(currentSpeed, vehicle, curveArray[index], gradientArray[index], tunnelArray[index]);
-		speedHistory.push(currentSpeed);
-
-		if (speedHistory.reduce((p, v) => p + (3.6 / v), 0) > 10) {
-			return index;
-		}
-		index++;
-	}
-}
-
 // ブレーキパターンが接触する距離
 function getBrakePatternDistance(brakePatternArray: number[], currentSpeed: number, index: number) {
 	for (; index < brakePatternArray.length - 1; index++) {
@@ -372,8 +311,4 @@ function getBrakePatternDistance(brakePatternArray: number[], currentSpeed: numb
 }
 
 export function TEST_FUNC() {
-	const route = TestRoute;
-	const vehicle = TestVehicle;
-
-	const _runcurve = GetRuncurveSpeed(route, vehicle, 0, 1000, 75);
 }

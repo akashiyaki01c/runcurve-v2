@@ -48,13 +48,13 @@ export function GetRuncurveLineTime(route: Route, vehicle: Vehicle, runcurve: Ru
 			return [{
 				fromStation: route.stopPositions.find(v => v.position === start)!,
 				toStation: route.stopPositions.find(v => v.position === end + 1)!,
-				time: runcurve.runcurveArray[runcurve.runcurveArray.length - 1]?.time!
+				time: runcurve.runcurveArray[runcurve.runcurveArray.length - 1]?.time || 0
 			}];
 		}
 		result.push({
 			fromStation: route.stopPositions.find(v => v.position === start)!,
 			toStation: splitDistances[0],
-			time: runcurve.runcurveArray.find(v => v.distance === splitDistances[0].position)?.time!
+			time: runcurve.runcurveArray.find(v => v.distance === splitDistances[0].position)?.time || 0
 		});
 		for (let i = 1; i < splitDistances.length; i++) {
 			const before = splitDistances[i - 1];
