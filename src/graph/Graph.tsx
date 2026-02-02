@@ -8,7 +8,7 @@ export function Graph({
   data: RuncurveResult[];
   route: Route;
 }) {
-  const xScale = 0.3;
+  const xScale = 0.15;
   const yScale = 5;
   const start = data[0]?.runcurveArray[0]?.distance || 0;
   const maxSpeed = 120;
@@ -48,7 +48,7 @@ export function Graph({
             />
           ) : (
             <></>
-          )
+          ),
         )}
         {[...Array(length + 1).keys()].map((v) =>
           (v + start) % 1000 === 0 ? (
@@ -73,7 +73,7 @@ export function Graph({
             </text>
           ) : (
             <></>
-          )
+          ),
         )}
         {/* 横軸 */}
         {[...Array(maxSpeed + 1).keys()].map((v) =>
@@ -96,7 +96,7 @@ export function Graph({
               y2={v * yScale}
               strokeWidth={0.5}
             />
-          )
+          ),
         )}
         {/* 駅の縦線 */}
         {route.stopPositions.map((v) => (
@@ -135,7 +135,7 @@ export function Graph({
                 (v) =>
                   `${(v.distance - start) * xScale},${
                     (maxSpeed - v.time) * yScale
-                  }`
+                  }`,
               )
               .join(" ")}
             strokeWidth={2}
@@ -152,7 +152,7 @@ export function Graph({
                 (v) =>
                   `${(v.distance - start) * xScale},${
                     (maxSpeed - v.speed) * yScale
-                  }`
+                  }`,
               )
               .join(" ")}
             strokeWidth={2}
@@ -162,14 +162,16 @@ export function Graph({
         {data
           .flatMap((v) => v.notches)
           .map((v) => (
-            <text
-              key={`notch-${v[0]}-${v[1]}`}
-              x={(v[0] - start) * xScale}
-              y={(maxSpeed - 5) * yScale}
-              textAnchor="middle"
-            >
-              {getNotchText(v[1])}
-            </text>
+            <>
+              <text
+                key={`notch-${v.distance}-${v.type}`}
+                x={(v.distance - start) * xScale}
+                y={(maxSpeed - 5) * yScale}
+                textAnchor="middle"
+              >
+                {getNotchText(v.type)}
+              </text>
+            </>
           ))}
         {/* 制限速度 */}
         {route.limitSpeeds.map((v) => (
@@ -242,9 +244,7 @@ export function Graph({
           fill="none"
           points={`${(route.curves[route.curves.length - 1]?.end - start) * xScale},${
             (maxSpeed + 15) * yScale
-          } ${(length) * xScale},${
-            (maxSpeed + 15) * yScale
-          }`}
+          } ${length * xScale},${(maxSpeed + 15) * yScale}`}
         />
         {/* 勾配 */}
         {route.gradients.map((v) => (
@@ -349,7 +349,7 @@ export function Graph({
       .filter((v) => start < v && v < end);
     for (const distance of splitDistances) {
       const index = result.runcurveArray.findIndex(
-        (v) => v.distance === distance
+        (v) => v.distance === distance,
       );
       const offset = result.runcurveArray[index].time;
       for (let i = index; i < result.runcurveArray.length; i++) {

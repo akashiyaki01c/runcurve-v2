@@ -68,6 +68,7 @@ export class StopPosition {
 	isPass: boolean = false;
 }
 
+/** テストデータ */
 export const TestRoute: Route = {
 	name: "テスト線",
 	gradients: [

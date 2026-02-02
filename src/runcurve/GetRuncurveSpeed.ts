@@ -1,5 +1,5 @@
 import { LimitSpeed, Route } from "../model/Route";
-import { NotchType, RuncurveResult } from "../model/Runcurve";
+import { NotchOperate, NotchType, RuncurveResult } from "../model/Runcurve";
 import { ForceInterpolation, Vehicle } from "../model/Vehicle";
 import { GetCurveRadius, GetGradient, GetTunnel } from "./RouteData";
 
@@ -51,9 +51,9 @@ export function getDecelBeforeSpeed(currentSpeed: number, vehicle: Vehicle, radi
 }
 
 /** ランカーブ生成 */
-export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: number, endPos: number, maxSpeed: number): [number[], [number, NotchType][]] {
+export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: number, endPos: number, maxSpeed: number): [number[], NotchOperate[]] {
 	const limitMarginSpeed = 2;
-	const reAccelerationRatio = 0.90;
+	const reAccelerationRatio = 0.85;
 
 	const length = endPos - startPos;
 	// 制限速度配列
@@ -66,11 +66,11 @@ export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: numbe
 	const brakePatternArray = getLimitSpeedBrakePatternArray(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray);
 	const speedArray: number[] = [...Array(endPos - startPos)].map(() => 0);
 
-	const notchOperate: [number, NotchType][] = [];
+	const notchOperate: NotchOperate[] = [];
 
 	let speed = 0;
 	let notchType: NotchType = "Power";
-	notchOperate.push([startPos, "Power"]);
+	notchOperate.push({ distance: startPos, type: "Power", detail: "駅発車力行" });
 
 	for (let i = 0; i < length; i++) {
 		// 運転シミュレータ
@@ -79,23 +79,23 @@ export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: numbe
 				if (i % 10 === 0 && get10sLaterNotchOffSpeed(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray, i, speed) > (limitSpeedArray[i] - limitMarginSpeed)) {
 					// 速度が惰行で10s後に目標速度を超える時
 					notchType = "NotchOff";
-					notchOperate.push([i + startPos, "NotchOff"]);
+					notchOperate.push({ distance: i + startPos, type: "NotchOff", detail: "10秒惰行で目標速度を超過のためノッチオフ" });
 				}
 				if (speed > (limitSpeedArray[i] - limitMarginSpeed)) {
 					// 速度が目標速度に達した
 					if (getNotchOffNextSpeed(speed, vehicle, curveArray[i], gradientArray[i], tunnelArray[i]) > speed) {
 						notchType = "Constant";
-						notchOperate.push([i + startPos, "Constant"]);
+						notchOperate.push({ distance: i + startPos, type: "Constant", detail: "目標速度超過 かつ 惰行で加速のため抑速" });
 					} else {
 						notchType = "NotchOff";
-						notchOperate.push([i + startPos, "NotchOff"]);
+						notchOperate.push({ distance: i + startPos, type: "NotchOff", detail: "目標速度超過のためノッチオフ" });
 					}
 				}
 				if (getBrakePatternDistance(brakePatternArray, speed, i) != -1) {
 					if (3.6 * ((getBrakePatternDistance(brakePatternArray, speed, i) - i) / speed) < 5) {
 						// ブレーキパターンが10s後に接近(近似)
 						notchType = "NotchOff";
-						notchOperate.push([i + startPos, "NotchOff"]);
+						notchOperate.push({ distance: i + startPos, type: "NotchOff", detail: "ブレーキパターンが10秒後に接近" });
 					}
 				}
 				break;
@@ -107,27 +107,33 @@ export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: numbe
 					}
 				}
 				if (i % 10 === 0) {
-					if (limitSpeedArray[i] * reAccelerationRatio > speed) {
+					if (limitSpeedArray[i] * reAccelerationRatio > speed && !(get10sLaterNotchOffSpeed(route, vehicle, startPos, endPos, limitSpeedArray, curveArray, gradientArray, tunnelArray, i, speed) > (limitSpeedArray[i] - limitMarginSpeed))) {
 						// 速度が一定速度以下
 						notchType = "Power";
-						notchOperate.push([i + startPos, "Power"]);
+						notchOperate.push({ distance: i + startPos, type: "Power", detail: "車速が目標速度の一定速度以下のため力行" });
 					}
 				}
 				if (speed > (limitSpeedArray[i] - limitMarginSpeed) && getNotchOffNextSpeed(speed, vehicle, curveArray[i], gradientArray[i], tunnelArray[i]) > speed) {
 					notchType = "Constant";
-					notchOperate.push([i + startPos, "Constant"]);
+					notchOperate.push({ distance: i + startPos, type: "Constant", detail: "目標速度超過 かつ 惰行で加速のため抑速" });
 				}
 				if (brakePatternArray[i] !== -1 && speed > brakePatternArray[i]) {
 					notchType = "Brake";
-					notchOperate.push([i + startPos, "Brake"]);
+					notchOperate.push({ distance: i + startPos, type: "Brake", detail: "制動パターン超過のため制動" });
 				}
 				break;
 			}
 			case "Constant": {
+				if (limitSpeedArray[i - 1] < limitSpeedArray[i]) {
+					// 制限が更新
+					notchType = "Power";
+					notchOperate.push({ distance: i + startPos, type: "Power", detail: "制限が更新された" });
+					break;
+				}
 				if (limitSpeedArray[i] * reAccelerationRatio > speed) {
 					// 速度が一定速度以下
 					notchType = "Power";
-					notchOperate.push([i + startPos, "Power"]);
+					notchOperate.push({ distance: i + startPos, type: "Power", detail: "車速が目標速度の一定速度以下のため力行" });
 				}
 				if (speed > (limitSpeedArray[i] - limitMarginSpeed)) {
 					// 速度が目標速度に達した
@@ -135,20 +141,19 @@ export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: numbe
 						// no-op
 					} else {
 						notchType = "NotchOff";
-						notchOperate.push([i + startPos, "NotchOff"]);
+						notchOperate.push({ distance: i + startPos, type: "NotchOff", detail: "目標速度超過 かつ 惰行で加速のため抑速" });
 					}
 				}
 				if (brakePatternArray[i] !== -1 && speed > brakePatternArray[i]) {
 					notchType = "Brake";
-					notchOperate.push([i + startPos, "Brake"]);
+					notchOperate.push({ distance: i + startPos, type: "Brake", detail: "制動パターン超過のため制動" });
 				}
 				break;
 			}
 			case "Brake": {
-				if (brakePatternArray.length !== brakePatternArray.length - 1
-					&& brakePatternArray[i + 1] > getNotchOffNextSpeed(speed, vehicle, curveArray[i], gradientArray[i], tunnelArray[i])) {
+				if (brakePatternArray[i + 1] > getNotchOffNextSpeed(speed, vehicle, curveArray[i], gradientArray[i], tunnelArray[i])) {
 					notchType = "NotchOff";
-					notchOperate.push([i + startPos, "NotchOff"]);
+					notchOperate.push({ distance: i + startPos, type: "NotchOff", detail: "惰行時 制動パターンより車速が低いためノッチオフ" });
 				}
 			}
 		}
@@ -165,7 +170,7 @@ export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: numbe
 			case "Constant":
 				if (getNotchOffNextSpeed(speed, vehicle, curveArray[i], gradientArray[i], tunnelArray[i]) < speed) {
 					notchType = "NotchOff";
-					notchOperate.push([i + startPos, "NotchOff"]);
+					notchOperate.push({ distance: i + startPos, type: "NotchOff", detail: "目標速度超過 かつ 惰行で加速のため抑速" });
 					speed = getNotchOffNextSpeed(speed, vehicle, curveArray[i], gradientArray[i], tunnelArray[i]);
 					speedArray[i] = speed;
 				} else {
@@ -177,10 +182,10 @@ export function GetRuncurveSpeed(route: Route, vehicle: Vehicle, startPos: numbe
 					// 速度が目標速度に達した
 					if (getNotchOffNextSpeed(speed, vehicle, curveArray[i], gradientArray[i], tunnelArray[i]) > speed) {
 						notchType = "Constant";
-						notchOperate.push([i + startPos, "Constant"]);
+						notchOperate.push({ distance: i + startPos, type: "Constant", detail: "目標速度超過 かつ 惰行で加速のため抑速" });
 					} else {
 						notchType = "NotchOff";
-						notchOperate.push([i + startPos, "NotchOff"]);
+						notchOperate.push({ distance: i + startPos, type: "NotchOff", detail: "目標速度超過のためノッチオフ" });
 						speed = getNotchOffNextSpeed(speed, vehicle, curveArray[i], gradientArray[i], tunnelArray[i]);
 					}
 

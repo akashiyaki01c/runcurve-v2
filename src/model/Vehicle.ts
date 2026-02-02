@@ -145,26 +145,27 @@ function defaultTractiveForce(
     coefficient0: number, coefficient1: number
 ) {
     const result: [number, number][] = []; // kgf
+    const marginRatio = 0.1;
 
     { // 定トルク領域 [0..fixedTorqueSpeed)
         // 編成重量[kg] * 起動加速度[m/s^2] / 9.807 = F[kgf]
         const fixedTorque = (startupAcceleration / 3.6) * (mCars * mWeight + tCars * tWeight) * 1000 / 9.807;
         for (let i = 0; i < fixedTorqueSpeed; i++) {
-            result.push([i, fixedTorque]);
+            result.push([i, fixedTorque * (1 - marginRatio)]);
         }
     }
 
     { // 定出力領域 [fixedTorqueSpeed..constantPowerSpeed)
         const constant = fixedTorqueSpeed ** coefficient0 * result[result.length - 1][1];
         for (let i = fixedTorqueSpeed; i < constantPowerSpeed; i++) {
-            result.push([i, constant / i ** coefficient0]);
+            result.push([i, (constant / i ** coefficient0) * (1 - marginRatio)]);
         }
     }
 
     { // 特性領域 [constantPowerSpeed..maxSpeed)
         const constant = constantPowerSpeed ** coefficient1 * result[result.length - 1][1];
         for (let i = constantPowerSpeed; i < maxSpeed; i++) {
-            result.push([i, constant / i ** coefficient1]);
+            result.push([i, (constant / i ** coefficient1) * (1 - marginRatio)]);
         }
     }
 
