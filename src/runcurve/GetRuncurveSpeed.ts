@@ -318,6 +318,3 @@ function getBrakePatternDistance(brakePatternArray: number[], currentSpeed: numb
 	}
 	return -1;
 }
-
-export function TEST_FUNC() {
-}
