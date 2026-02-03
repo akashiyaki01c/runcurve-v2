@@ -283,18 +283,22 @@ function getLimitSpeedBrakePatternArray(route: Route, vehicle: Vehicle, startPos
 
 // 惰行で10秒間走った時の速度
 function get10sLaterNotchOffSpeed(_route: Route, vehicle: Vehicle, _startPos: number, _endPos: number, limitSpeedArray: number[], curveArray: number[], gradientArray: number[], tunnelArray: number[], index: number, currentSpeed: number) {
-	const speedHistory = [currentSpeed];
 	if (currentSpeed == 0) {
 		return 0;
 	}
+	let totalTime = 0;
 	while (true) {
 		if (limitSpeedArray.length <= index) {
 			return 0;
 		}
 		currentSpeed = getNotchOffNextSpeed(currentSpeed, vehicle, curveArray[index], gradientArray[index], tunnelArray[index]);
-		speedHistory.push(currentSpeed);
 
-		if (speedHistory.reduce((p, v) => p + (3.6 / v), 0) > 10) {
+		if (currentSpeed <= 0)
+			return 0;
+
+		totalTime += (3.6 / currentSpeed);
+
+		if (totalTime > 10) {
 			return currentSpeed;
 		}
 		index++;
