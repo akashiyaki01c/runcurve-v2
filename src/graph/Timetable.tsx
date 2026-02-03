@@ -23,12 +23,12 @@ export function Timetable({ result }: { result: TimeResult[] }) {
           <tr>
             <td rowSpan={2}>{result[0].fromStation.stationName}</td>
             <td rowSpan={2}>{result[0].fromStation.trackName}</td>
-            <td rowSpan={2}>{result[0].fromStation.isPass ? "↓" : "◯"}</td>
+            <td rowSpan={2}>{result[0].fromStation.isPass ? "↓" : "◎"}</td>
             <td></td>
             <td></td>
             <td></td>
           </tr>
-          {result.map((v) => (
+          {result.map((v, i) => (
             <>
               <tr key={`${v.fromStation.position}-${v.toStation.position}`}>
                 {/* 駅名 */}
@@ -50,7 +50,7 @@ export function Timetable({ result }: { result: TimeResult[] }) {
               <tr>
                 <td rowSpan={2}>{v.toStation.stationName}</td>
                 <td rowSpan={2}>{v.toStation.trackName}</td>
-                <td rowSpan={2}>{v.toStation.isPass ? "↓" : "◯"}</td>
+                <td rowSpan={2}>{v.toStation.isPass ? "↓" : (i === result.length-1 ? "◎" : "◯")}</td>
               </tr>
             </>
           ))}
