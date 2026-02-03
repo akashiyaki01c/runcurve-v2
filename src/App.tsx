@@ -20,7 +20,7 @@ function App() {
   const [vehicle, setVehicle] = useState(new Vehicle());
 
   const [runcurve, setRuncurve] = useState([] as RuncurveResult[]);
-  
+
   return (
     <>
       <div className="flex w-[100%]">
@@ -89,7 +89,7 @@ function App() {
                           <button
                             onClick={() => {
                               route.gradients = route.gradients.filter(
-                                (_, _i) => _i !== i
+                                (_, _i) => _i !== i,
                               );
                               setRoute({ ...route });
                             }}
@@ -164,7 +164,7 @@ function App() {
                         <button
                           onClick={() => {
                             route.curves = route.curves.filter(
-                              (_, _i) => _i !== i
+                              (_, _i) => _i !== i,
                             );
                             setRoute({ ...route });
                           }}
@@ -242,7 +242,7 @@ function App() {
                           <button
                             onClick={() => {
                               route.limitSpeeds = route.limitSpeeds.filter(
-                                (_, _i) => _i !== i
+                                (_, _i) => _i !== i,
                               );
                               setRoute({ ...route });
                             }}
@@ -334,7 +334,7 @@ function App() {
                           <button
                             onClick={() => {
                               route.stopPositions = route.stopPositions.filter(
-                                (_, _i) => _i !== i
+                                (_, _i) => _i !== i,
                               );
                               setRoute({ ...route });
                             }}
@@ -673,9 +673,16 @@ function App() {
       <hr />
       <div>
         <button
-          onClick={() =>
-            setRuncurve(GetRuncurveLine(route, SetForceData(vehicle), vehicle.maxSpeed))
-          }
+          onClick={() => {
+            console.time("calc-runcurve");
+            const result = GetRuncurveLine(
+              route,
+              SetForceData(vehicle),
+              vehicle.maxSpeed,
+            );
+            console.timeEnd("calc-runcurve");
+            setRuncurve(result);
+          }}
         >
           計算実行
         </button>
